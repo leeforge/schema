@@ -1,0 +1,657 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schema.schema.json",
+  "title": "Content Schema",
+  "type": "object",
+  "required": ["name"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema 引用"
+    },
+    "name": {
+      "type": "string",
+      "description": "实体名称 (PascalCase: User, Article)"
+    },
+    "type": {
+      "type": "string",
+      "const": "object",
+      "description": "固定为 object"
+    },
+    "description": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      ],
+      "description": "实体描述（支持多语言）"
+    },
+    "softDelete": {
+      "type": "boolean",
+      "description": "软删除支持（默认 false）"
+    },
+    "info": {
+      "$ref": "#/definitions/SchemaInfo"
+    },
+    "ui": {
+      "$ref": "#/definitions/RootUI"
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Property"
+      }
+    },
+    "indexes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Index"
+      }
+    },
+    "features": {
+      "$ref": "#/definitions/Features"
+    }
+  },
+  "definitions": {
+    "SchemaInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "collectionName": {
+          "type": "string",
+          "description": "数据库表名（默认 name 的小写复数）"
+        },
+        "displayName": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          ],
+          "description": "显示名称（支持多语言）"
+        },
+        "description": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          ],
+          "description": "详细描述（支持多语言）"
+        },
+        "icon": {
+          "type": "string",
+          "description": "图标名称"
+        },
+        "locale": {
+          "type": "string",
+          "description": "默认语言 (zh-CN, en-US)"
+        }
+      }
+    },
+    "RootUI": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "submitText": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          ],
+          "description": "提交按钮文本（支持多语言）"
+        },
+        "resetText": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          ],
+          "description": "重置按钮文本（支持多语言）"
+        },
+        "showReset": {
+          "type": "boolean",
+          "description": "显示重置按钮"
+        },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "direction": {
+              "type": "string",
+              "enum": ["vertical", "horizontal"],
+              "description": "布局方向"
+            },
+            "gap": {
+              "type": "number",
+              "description": "间距"
+            },
+            "columns": {
+              "type": "number",
+              "description": "栅格列数"
+            }
+          },
+          "description": "布局配置"
+        }
+      },
+      "description": "表单/页面级别的 UI 配置"
+    },
+    "Property": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "description": "引用目标实体类型（用于关系字段）"
+        },
+        "type": {
+          "$ref": "#/definitions/Type",
+          "description": "字段类型（关系字段不需要设置，使用 $ref 即可）"
+        },
+        "$component": {
+          "type": "string",
+          "description": "组件引用"
+        },
+        "relation-type": {
+          "$ref": "#/definitions/ComponentMode",
+          "description": "关系组件模式"
+        },
+        "label": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          ],
+          "description": "字段标签（支持多语言）"
+        },
+        "description": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          ],
+          "description": "字段描述（支持多语言）"
+        },
+        "validate": {
+          "$ref": "#/definitions/Validate",
+          "description": "字段校验规则"
+        },
+        "unique": {
+          "type": "boolean",
+          "description": "唯一索引"
+        },
+        "primaryKey": {
+          "type": "boolean",
+          "description": "主键"
+        },
+        "private": {
+          "type": "boolean",
+          "description": "私有字段（不返回前端）"
+        },
+        "default": {
+          "description": "默认值"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "版本控制"
+        },
+        "writable": {
+          "type": "boolean",
+          "description": "是否可写（默认 true）"
+        },
+        "queryable": {
+          "type": "boolean",
+          "description": "是否可查询（默认 true）"
+        },
+        "exportable": {
+          "type": "boolean",
+          "description": "是否可导出（默认 true）"
+        },
+        "importable": {
+          "type": "boolean",
+          "description": "是否可导入（默认 true）"
+        },
+        "allowedTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MediaType"
+          },
+          "uniqueItems": true,
+          "description": "媒体类型限制 (image, video, audio, file)"
+        },
+        "x-relation": {
+          "$ref": "#/definitions/Relation"
+        },
+        "ui": {
+          "$ref": "#/definitions/UI"
+        },
+        "items": {
+          "$ref": "#/definitions/Property",
+          "description": "数组元素类型（当 type 为 array 时）"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Property"
+          },
+          "description": "对象属性（当 type 为 object 时）"
+        }
+      }
+    },
+    "Validate": {
+      "type": "object",
+      "description": "通用的字段校验规则，可同时映射到 Ent 和 Zod",
+      "additionalProperties": false,
+      "properties": {
+        "required": {
+          "type": "boolean",
+          "description": "是否必填。Ent: .NotEmpty()，Zod: .nonempty()"
+        },
+        "nullable": {
+          "type": "boolean",
+          "description": "是否可为 null。Ent: .Nillable()，Zod: .nullable()"
+        },
+        "min": {
+          "type": "number",
+          "description": "最小值（仅数字）。Ent: .Min()，Zod: .min()/.gte()"
+        },
+        "max": {
+          "type": "number",
+          "description": "最大值（仅数字）。Ent: .Max()，Zod: .max()/.lte()"
+        },
+        "minLength": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "最小长度（字符串/数组）。Ent: .MinLen()，Zod: .min()"
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "最大长度（字符串/数组）。Ent: .MaxLen()，Zod: .max()"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "正则表达式（字符串）。Ent: .Match(regexp)，Zod: .regex(pattern)"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["email", "url", "uuid", "phone", "datetime", "date", "time"],
+          "description": "预定义格式。Ent: 自定义 Validator，Zod: .email()/.url()等"
+        },
+        "positive": {
+          "type": "boolean",
+          "description": "必须为正数。Ent: .Positive()，Zod: .positive()"
+        },
+        "negative": {
+          "type": "boolean",
+          "description": "必须为负数。Ent: .Negative()，Zod: .negative()"
+        },
+        "nonNegative": {
+          "type": "boolean",
+          "description": "非负数。Ent: .NonNegative()，Zod: .nonnegative()"
+        },
+        "integer": {
+          "type": "boolean",
+          "description": "必须为整数。Ent: Integer 类型，Zod: .int()"
+        },
+        "enum": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "枚举值。Ent: .Enum()，Zod: .enum()"
+        },
+        "custom": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["code"],
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "自定义校验代码（Go/TS）"
+              },
+              "message": {
+                "oneOf": [
+                  { "type": "string" },
+                  {
+                    "type": "object",
+                    "additionalProperties": { "type": "string" }
+                  }
+                ],
+                "description": "错误消息（支持多语言）"
+              }
+            }
+          },
+          "description": "自定义校验逻辑"
+        },
+        "errorMessage": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          ],
+          "description": "统一的错误消息（支持多语言）"
+        }
+      }
+    },
+    "UI": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "searchable": {
+          "type": "boolean",
+          "description": "支持搜索"
+        },
+        "filterable": {
+          "type": "boolean",
+          "description": "支持过滤"
+        },
+        "sortable": {
+          "type": "boolean",
+          "description": "支持排序"
+        },
+        "aggregatable": {
+          "type": "boolean",
+          "description": "支持聚合"
+        },
+        "exportable": {
+          "type": "boolean",
+          "description": "支持导出"
+        },
+        "importable": {
+          "type": "boolean",
+          "description": "支持导入"
+        },
+        "batchable": {
+          "type": "boolean",
+          "description": "支持批量操作"
+        },
+        "editable": {
+          "type": "boolean",
+          "description": "支持编辑"
+        },
+        "queryable": {
+          "type": "boolean",
+          "description": "支持查询"
+        },
+        "sort": {
+          "type": "integer",
+          "description": "排序权重"
+        },
+        "widget": {
+          "type": "string",
+          "enum": [
+            "text",
+            "textarea",
+            "password",
+            "email",
+            "number",
+            "decimal",
+            "select",
+            "radio",
+            "checkbox",
+            "switch",
+            "date",
+            "datetime",
+            "file",
+            "image",
+            "video",
+            "audio",
+            "custom"
+          ],
+          "description": "UI 组件类型"
+        },
+        "size": {
+          "type": "string",
+          "enum": ["sm", "md", "lg"],
+          "description": "组件大小"
+        },
+        "className": {
+          "type": "string",
+          "description": "自定义 CSS 类"
+        },
+        "style": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "内联样式"
+        },
+        "icon": {
+          "type": "string",
+          "description": "图标"
+        },
+        "prefix": {
+          "type": "string",
+          "description": "前缀文本"
+        },
+        "suffix": {
+          "type": "string",
+          "description": "后缀文本"
+        },
+        "placeholder": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          ],
+          "description": "占位符（支持多语言）"
+        },
+        "readOnly": {
+          "type": "boolean",
+          "description": "只读"
+        },
+        "writeOnly": {
+          "type": "boolean",
+          "description": "写入专用（如密码）"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "禁用"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["value", "label"],
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "oneOf": [
+                  { "type": "string" },
+                  { "type": "number" }
+                ],
+                "description": "选项值"
+              },
+              "label": {
+                "oneOf": [
+                  { "type": "string" },
+                  {
+                    "type": "object",
+                    "additionalProperties": { "type": "string" }
+                  }
+                ],
+                "description": "选项标签（支持多语言）"
+              },
+              "disabled": {
+                "type": "boolean",
+                "description": "是否禁用"
+              }
+            }
+          },
+          "description": "选项列表（select/radio/checkbox）"
+        },
+        "multiple": {
+          "type": "boolean",
+          "description": "多选"
+        },
+        "rows": {
+          "type": "number",
+          "description": "Textarea 行数"
+        },
+        "step": {
+          "type": "number",
+          "description": "步长"
+        },
+        "precision": {
+          "type": "number",
+          "description": "小数精度"
+        },
+        "span": {
+          "type": "number",
+          "description": "栅格占用（一行为24等分）"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "是否隐藏"
+        },
+        "showInList": {
+          "type": "boolean",
+          "description": "在列表中显示"
+        },
+        "showInForm": {
+          "type": "boolean",
+          "description": "在表单中显示"
+        }
+      }
+    },
+    "Relation": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/RelationType",
+          "description": "关系类型"
+        },
+        "inversedBy": {
+          "type": "string",
+          "description": "反向字段（用于双向关系）"
+        },
+        "mapBy": {
+          "type": "string",
+          "description": "映射字段（用于中间表）"
+        },
+        "labelField": {
+          "type": "string",
+          "description": "在关系中显示的字段名（用于UI显示）"
+        },
+        "preload": {
+          "type": "boolean",
+          "description": "是否预加载"
+        },
+        "writable": {
+          "type": "boolean",
+          "description": "是否可写"
+        },
+        "queryable": {
+          "type": "boolean",
+          "description": "是否可查询"
+        },
+        "onDelete": {
+          "$ref": "#/definitions/RelationDeleteAction",
+          "description": "删除动作"
+        }
+      }
+    },
+    "Index": {
+      "type": "object",
+      "required": ["columns"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/IndexType",
+          "description": "索引类型（默认为 index）"
+        },
+        "name": {
+          "type": "string",
+          "description": "索引名称"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "索引字段"
+        },
+        "unique": {
+          "type": "boolean",
+          "description": "是否唯一（兼容旧版）"
+        }
+      }
+    },
+    "Type": {
+      "enum": [
+        "string",
+        "text",
+        "integer",
+        "number",
+        "boolean",
+        "enum",
+        "json",
+        "media",
+        "richText",
+        "datetime",
+        "password",
+        "uid",
+        "version",
+        "array",
+        "object"
+      ]
+    },
+    "MediaType": {
+      "enum": ["image", "video", "audio", "file"]
+    },
+    "ComponentMode": {
+      "enum": ["flatten", "relation"]
+    },
+    "RelationType": {
+      "enum": ["one2One", "many2One", "one2Many", "many2Many"]
+    },
+    "RelationDeleteAction": {
+      "enum": ["cascade", "setNull", "restrict", "noAction", "setDefault"]
+    },
+    "IndexType": {
+      "enum": ["unique", "fulltext", "index"]
+    },
+    "Features": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "softDelete": {
+          "type": "boolean",
+          "description": "软删除"
+        },
+        "export": {
+          "type": "boolean",
+          "description": "导出功能"
+        },
+        "import": {
+          "type": "boolean",
+          "description": "导入功能"
+        },
+        "batch": {
+          "type": "boolean",
+          "description": "批量操作"
+        }
+      }
+    }
+  }
+}
