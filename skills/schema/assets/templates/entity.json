@@ -1,24 +1,290 @@
 {
   "$schema": "https://raw.githubusercontent.com/leeforge/schema/main/schema.json",
-  "name": "ExampleEntity",
-  "description": "A template for creating new entities",
+  "name": "Article",
+  "description": {
+    "zh-CN": "文章实体，用于内容管理",
+    "en-US": "Article entity for content management"
+  },
   "softDelete": true,
+  "info": {
+    "collectionName": "articles",
+    "displayName": {
+      "zh-CN": "文章",
+      "en-US": "Article"
+    },
+    "icon": "document",
+    "locale": "zh-CN"
+  },
   "ui": {
     "showReset": true,
-    "submitText": "Save"
+    "submitText": {
+      "zh-CN": "保存",
+      "en-US": "Save"
+    },
+    "layout": {
+      "direction": "vertical",
+      "columns": 2,
+      "gap": 16
+    }
   },
   "properties": {
-    "name": {
+    "title": {
       "type": "string",
-      "label": "Name",
+      "label": {
+        "zh-CN": "标题",
+        "en-US": "Title"
+      },
       "validate": {
         "required": true,
-        "maxLength": 100
+        "minLength": 1,
+        "maxLength": 200
+      },
+      "ui": {
+        "span": 24,
+        "placeholder": {
+          "zh-CN": "请输入文章标题",
+          "en-US": "Enter article title"
+        },
+        "showInList": true,
+        "searchable": true,
+        "sortable": true
+      }
+    },
+    "slug": {
+      "type": "uid",
+      "label": "Slug",
+      "unique": true,
+      "validate": {
+        "required": true,
+        "pattern": "^[a-z0-9-]+$"
+      },
+      "ui": {
+        "span": 12
+      }
+    },
+    "status": {
+      "type": "enum",
+      "label": {
+        "zh-CN": "状态",
+        "en-US": "Status"
+      },
+      "default": "draft",
+      "validate": {
+        "required": true,
+        "enum": ["draft", "published", "archived"]
+      },
+      "ui": {
+        "widget": "select",
+        "span": 12,
+        "options": [
+          {
+            "value": "draft",
+            "label": { "zh-CN": "草稿", "en-US": "Draft" }
+          },
+          {
+            "value": "published",
+            "label": { "zh-CN": "已发布", "en-US": "Published" }
+          },
+          {
+            "value": "archived",
+            "label": { "zh-CN": "已归档", "en-US": "Archived" }
+          }
+        ],
+        "filterable": true,
+        "showInList": true
+      }
+    },
+    "content": {
+      "type": "richText",
+      "label": {
+        "zh-CN": "内容",
+        "en-US": "Content"
+      },
+      "validate": {
+        "required": true
+      },
+      "ui": {
+        "span": 24,
+        "showInList": false
+      }
+    },
+    "excerpt": {
+      "type": "text",
+      "label": {
+        "zh-CN": "摘要",
+        "en-US": "Excerpt"
+      },
+      "validate": {
+        "maxLength": 500
+      },
+      "ui": {
+        "widget": "textarea",
+        "rows": 3,
+        "span": 24,
+        "placeholder": {
+          "zh-CN": "文章摘要（可选）",
+          "en-US": "Article excerpt (optional)"
+        }
+      }
+    },
+    "coverImage": {
+      "type": "media",
+      "label": {
+        "zh-CN": "封面图",
+        "en-US": "Cover Image"
+      },
+      "allowedTypes": ["image"],
+      "ui": {
+        "widget": "image",
+        "span": 12,
+        "showInList": true
+      }
+    },
+    "viewCount": {
+      "type": "integer",
+      "label": {
+        "zh-CN": "浏览量",
+        "en-US": "View Count"
+      },
+      "default": 0,
+      "writable": false,
+      "validate": {
+        "nonNegative": true
+      },
+      "ui": {
+        "readOnly": true,
+        "span": 6,
+        "showInForm": false,
+        "showInList": true,
+        "sortable": true
+      }
+    },
+    "isFeatured": {
+      "type": "boolean",
+      "label": {
+        "zh-CN": "是否推荐",
+        "en-US": "Featured"
+      },
+      "default": false,
+      "ui": {
+        "widget": "switch",
+        "span": 6,
+        "filterable": true
+      }
+    },
+    "publishedAt": {
+      "type": "datetime",
+      "label": {
+        "zh-CN": "发布时间",
+        "en-US": "Published At"
+      },
+      "validate": {
+        "nullable": true
+      },
+      "ui": {
+        "widget": "datetime",
+        "span": 12,
+        "sortable": true,
+        "showInList": true
+      }
+    },
+    "tags": {
+      "type": "array",
+      "label": {
+        "zh-CN": "标签",
+        "en-US": "Tags"
+      },
+      "items": {
+        "type": "string"
       },
       "ui": {
         "span": 12,
-        "placeholder": "Enter name"
+        "multiple": true,
+        "searchable": true
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "label": {
+        "zh-CN": "元数据",
+        "en-US": "Metadata"
+      },
+      "properties": {
+        "seoTitle": {
+          "type": "string",
+          "label": "SEO Title",
+          "validate": {
+            "maxLength": 60
+          }
+        },
+        "seoDescription": {
+          "type": "string",
+          "label": "SEO Description",
+          "validate": {
+            "maxLength": 160
+          }
+        }
+      },
+      "ui": {
+        "span": 24
+      }
+    },
+    "author": {
+      "$ref": "User",
+      "label": {
+        "zh-CN": "作者",
+        "en-US": "Author"
+      },
+      "x-relation": {
+        "type": "many2One",
+        "inversedBy": "articles",
+        "labelField": "name",
+        "preload": true,
+        "onDelete": "setNull"
+      },
+      "ui": {
+        "span": 12,
+        "showInList": true,
+        "filterable": true
+      }
+    },
+    "category": {
+      "$ref": "Category",
+      "label": {
+        "zh-CN": "分类",
+        "en-US": "Category"
+      },
+      "x-relation": {
+        "type": "many2One",
+        "labelField": "name",
+        "preload": true
+      },
+      "ui": {
+        "span": 12,
+        "filterable": true,
+        "showInList": true
       }
     }
+  },
+  "indexes": [
+    {
+      "type": "unique",
+      "columns": ["slug"]
+    },
+    {
+      "type": "index",
+      "name": "idx_status_published",
+      "columns": ["status", "publishedAt"]
+    },
+    {
+      "type": "fulltext",
+      "columns": ["title", "content"]
+    }
+  ],
+  "features": {
+    "softDelete": true,
+    "export": true,
+    "import": true,
+    "batch": true
   }
 }
