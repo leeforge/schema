@@ -1,0 +1,14 @@
+tests/
+coverage/
+*.test.ts
+vitest.config.ts
+tsconfig.json
+tsdown.config.ts
+src/
+.gitignore
+TESTING.md
+EXAMPLES.md
+CHANGELOG.md
+test-temp*
+*.log
+.DS_Store

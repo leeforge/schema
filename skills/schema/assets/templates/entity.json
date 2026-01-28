@@ -54,45 +54,83 @@
       "type": "uid",
       "label": "Slug",
       "unique": true,
+      "config": {
+        "source": "title",
+        "separator": "-",
+        "lowercase": true
+      },
       "validate": {
-        "required": true,
-        "pattern": "^[a-z0-9-]+$"
+        "required": true
       },
       "ui": {
-        "span": 12
+        "span": 12,
+        "readOnly": true
+      }
+    },
+    "priority": {
+      "type": "enum",
+      "label": {
+        "zh-CN": "优先级",
+        "en-US": "Priority"
+      },
+      "default": "medium",
+      "validate": {
+        "required": true,
+        "enum": ["low", "medium", "high"]
+      },
+      "ui": {
+        "widget": "radio",
+        "span": 12,
+        "options": [
+          {
+            "value": "low",
+            "label": { "zh-CN": "低", "en-US": "Low" }
+          },
+          {
+            "value": "medium",
+            "label": { "zh-CN": "中", "en-US": "Medium" }
+          },
+          {
+            "value": "high",
+            "label": { "zh-CN": "高", "en-US": "High" }
+          }
+        ],
+        "showInList": true,
+        "filterable": true
       }
     },
     "status": {
-      "type": "enum",
       "label": {
         "zh-CN": "状态",
         "en-US": "Status"
       },
       "default": "draft",
+      "writable": false,
+      "$component": {
+        "name": "dictionary",
+        "config": {
+          "code": "article_status",
+          "display": {
+            "mode": "auto",
+            "fields": ["label", "color", "icon"],
+            "cache": true
+          }
+        }
+      },
       "validate": {
         "required": true,
-        "enum": ["draft", "published", "archived"]
+        "onCreate": "required",
+        "onUpdate": "optional"
       },
       "ui": {
         "widget": "select",
         "span": 12,
-        "options": [
-          {
-            "value": "draft",
-            "label": { "zh-CN": "草稿", "en-US": "Draft" }
-          },
-          {
-            "value": "published",
-            "label": { "zh-CN": "已发布", "en-US": "Published" }
-          },
-          {
-            "value": "archived",
-            "label": { "zh-CN": "已归档", "en-US": "Archived" }
-          }
-        ],
+        "showInList": true,
         "filterable": true,
-        "showInList": true
-      }
+        "render": "tag"
+      },
+      "queryable": true,
+      "exportable": true
     },
     "content": {
       "type": "richText",
@@ -100,8 +138,14 @@
         "zh-CN": "内容",
         "en-US": "Content"
       },
+      "config": {
+        "editor": "tiptap",
+        "allowedFormats": ["bold", "italic", "link", "image", "heading"],
+        "maxLength": 50000
+      },
       "validate": {
-        "required": true
+        "required": true,
+        "minLength": 10
       },
       "ui": {
         "span": 24,
@@ -128,14 +172,28 @@
       }
     },
     "coverImage": {
-      "type": "media",
       "label": {
         "zh-CN": "封面图",
         "en-US": "Cover Image"
       },
-      "allowedTypes": ["image"],
+      "$component": {
+        "name": "media",
+        "config": {
+          "accept": ["image/*"],
+          "maxSize": 2097152,
+          "storage": "oss",
+          "crop": {
+            "aspectRatio": 1.78,
+            "minWidth": 800
+          },
+          "display": {
+            "mode": "auto",
+            "fields": ["url", "thumbnail", "alt"]
+          }
+        }
+      },
       "ui": {
-        "widget": "image",
+        "widget": "upload",
         "span": 12,
         "showInList": true
       }
@@ -235,7 +293,7 @@
         "zh-CN": "作者",
         "en-US": "Author"
       },
-      "x-relation": {
+      "$relation": {
         "type": "many2One",
         "inversedBy": "articles",
         "labelField": "name",
@@ -254,7 +312,7 @@
         "zh-CN": "分类",
         "en-US": "Category"
       },
-      "x-relation": {
+      "$relation": {
         "type": "many2One",
         "labelField": "name",
         "preload": true

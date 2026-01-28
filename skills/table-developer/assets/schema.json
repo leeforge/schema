@@ -157,13 +157,38 @@
           "$ref": "#/definitions/Type",
           "description": "字段类型（关系字段不需要设置，使用 $ref 即可）"
         },
+        "config": {
+          "type": "object",
+          "description": "类型配置（用于扩展类型，如 uid, richText 等）"
+        },
         "$component": {
-          "type": "string",
-          "description": "组件引用"
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "组件简写形式：componentName:configValue (例如: dictionary:article_status)"
+            },
+            {
+              "type": "object",
+              "required": ["name"],
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "组件名称（必须已注册）"
+                },
+                "config": {
+                  "type": "object",
+                  "description": "组件配置（格式由组件定义）"
+                }
+              },
+              "description": "组件完整形式：包含名称和配置"
+            }
+          ],
+          "description": "组件引用：用于枚举、选项等需要外部数据源的场景"
         },
         "relation-type": {
           "$ref": "#/definitions/ComponentMode",
-          "description": "关系组件模式"
+          "description": "关系组件模式（已废弃，使用 $component 配置）"
         },
         "label": {
           "oneOf": [
@@ -231,10 +256,11 @@
             "$ref": "#/definitions/MediaType"
           },
           "uniqueItems": true,
-          "description": "媒体类型限制 (image, video, audio, file)"
+          "description": "媒体类型限制（已废弃，使用 $component.config 配置）"
         },
-        "x-relation": {
-          "$ref": "#/definitions/Relation"
+        "$relation": {
+          "$ref": "#/definitions/Relation",
+          "description": "关系配置（当 $ref 存在时）"
         },
         "ui": {
           "$ref": "#/definitions/UI"
@@ -264,6 +290,16 @@
         "nullable": {
           "type": "boolean",
           "description": "是否可为 null。Ent: .Nillable()，Zod: .nullable()"
+        },
+        "onCreate": {
+          "type": "string",
+          "enum": ["required", "optional", "skip"],
+          "description": "创建时的验证策略"
+        },
+        "onUpdate": {
+          "type": "string",
+          "enum": ["required", "optional", "skip"],
+          "description": "更新时的验证策略"
         },
         "min": {
           "type": "number",
@@ -528,6 +564,11 @@
         "showInForm": {
           "type": "boolean",
           "description": "在表单中显示"
+        },
+        "render": {
+          "type": "string",
+          "enum": ["text", "tag", "badge", "link", "image", "custom"],
+          "description": "列表中的渲染方式"
         }
       }
     },
@@ -598,22 +639,52 @@
       }
     },
     "Type": {
+      "description": "字段类型：包括存储类型和扩展类型",
       "enum": [
         "string",
         "text",
         "integer",
         "number",
         "boolean",
-        "enum",
-        "json",
-        "media",
-        "richText",
         "datetime",
-        "password",
+        "json",
+        "array",
+        "object",
+        "enum",
         "uid",
-        "version",
+        "email",
+        "url",
+        "phone",
+        "decimal",
+        "richText",
+        "password"
+      ]
+    },
+    "StorageType": {
+      "description": "存储类型：只关心数据库存储",
+      "enum": [
+        "string",
+        "text",
+        "integer",
+        "number",
+        "boolean",
+        "datetime",
+        "json",
         "array",
         "object"
+      ]
+    },
+    "ExtendedType": {
+      "description": "扩展类型：常用业务类型，无外部依赖",
+      "enum": [
+        "enum",
+        "uid",
+        "email",
+        "url",
+        "phone",
+        "decimal",
+        "richText",
+        "password"
       ]
     },
     "MediaType": {

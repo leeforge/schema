@@ -1,0 +1,51 @@
+{
+  "name": "@leeforge/schema-cli",
+  "type": "module",
+  "version": "0.0.1",
+  "bin": {
+    "schema-cli": "./dist/index.cjs"
+  },
+  "description": "CLI to install and manage Leeforge schema skills and rules",
+  "author": "Leeforge Team",
+  "license": "MIT",
+  "homepage": "https://github.com/leeforge/schema#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leeforge/schema.git"
+  },
+  "bugs": {
+    "url": "https://github.com/leeforge/schema/issues"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist/index.cjs",
+    "../skills",
+    "../schema-rules.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:verify": "node scripts/verify-tests.js",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "ora": "^8.0.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@types/prompts": "^2.4.9",
+    "bumpp": "^10.3.2",
+    "tsdown": "^0.18.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  }
+}
