@@ -4,19 +4,40 @@ This document provides practical examples of using the @leeforge/schema-cli tool
 
 ## Basic Usage
 
-### First Time Setup
+### First Time Setup - Interactive Mode (Recommended)
 
 ```bash
 # Navigate to your project
 cd my-awesome-project
 
-# Run the CLI
-npx @leeforge/schema-cli install
+# Run the interactive installer
+schema-cli install
 
-# Follow the interactive prompts:
-# 1. Select AI assistant (or it will auto-detect)
-# 2. Choose what to install (skills, rules, or both)
-# 3. Installation completes!
+# Follow the prompts:
+# 1. Select AI assistants (multi-select with Space)
+#    ◉ Claude Code (detected)
+#    ◯ Cursor
+#    ◉ Windsurf (detected)
+#
+# 2. Select what to install
+#    ◉ Skills
+#    ◉ Rules
+#
+# 3. Select skills
+#    ◉ schema
+#    ◉ code-detector
+#    ◉ form-developer
+#    ◉ table-developer
+#    ◉ backend-developer
+#
+# 4. Select rules
+#    ◉ schema-rules
+#
+# 5. Force overwrite? No
+#
+# 6. Review summary and confirm
+#
+# Installation completes!
 ```
 
 ## Common Scenarios

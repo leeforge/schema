@@ -34,7 +34,7 @@ schema-cli update
 
 ### `install`
 
-Install skills and/or rules to your AI assistant.
+Install skills and/or rules to your AI assistant with an interactive interface.
 
 ```bash
 schema-cli install [options]
@@ -47,13 +47,56 @@ Options:
   --force          Overwrite existing files
 ```
 
-**Examples:**
+#### Interactive Mode (Recommended)
+
+Run without options for a fully interactive experience:
 
 ```bash
-# Interactive mode
+schema-cli install
+```
+
+**Interactive prompts:**
+1. **Multi-select AI assistants** (auto-detects installed ones)
+2. **Multi-select resource types** (skills/rules)
+3. **Multi-select skills** (all selected by default)
+4. **Multi-select rules** (all selected by default)
+5. **Confirm force overwrite** (No by default)
+6. **Review summary** and confirm installation
+
+**Example flow:**
+```
+? Select AI assistants to install for:
+  ◉ Claude Code (detected)
+  ◯ Cursor
+  ◉ Windsurf (detected)
+  ◯ Cline
+
+? What would you like to install:
+  ◉ Skills
+  ◉ Rules
+
+? Select skills to install:
+  ◉ schema
+  ◉ code-detector
+  ◯ form-developer
+  ...
+
+📋 Installation Summary:
+  AI Assistants: Claude Code, Windsurf
+  Skills:        schema, code-detector
+  Rules:         schema-rules
+  Force:         No
+
+? Proceed with installation? Yes
+```
+
+#### Command Line Examples
+
+```bash
+# Interactive mode (recommended)
 schema-cli install
 
-# Install for Claude Code
+# Install for specific AI
 schema-cli install --ai claude
 
 # Install only skills
@@ -67,6 +110,9 @@ schema-cli install --ai all
 
 # Force reinstall
 schema-cli install --force
+
+# Combine options
+schema-cli install --ai cursor --skills schema --rules schema-rules
 ```
 
 ### `list`
