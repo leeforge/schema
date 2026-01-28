@@ -57,29 +57,6 @@ export const RULES_MAPPING: Record<Exclude<AIType, 'all'>, string> = {
 };
 
 /**
- * Available skills in the repository
- */
-export const AVAILABLE_SKILLS = [
-  'schema',
-  'code-detector',
-  'form-developer',
-  'table-developer',
-  'backend-developer',
-] as const;
-
-export type SkillName = typeof AVAILABLE_SKILLS[number];
-
-/**
- * Available rules in the repository
- * Rules are markdown files at the repository root
- */
-export const AVAILABLE_RULES = [
-  'schema-rules',
-] as const;
-
-export type RuleName = typeof AVAILABLE_RULES[number];
-
-/**
  * AI type detection result
  */
 export interface DetectionResult {

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { AVAILABLE_SKILLS, AVAILABLE_RULES } from '../types/index.js';
+import { scanAvailableSkills, scanAvailableRules } from '../utils/copy.js';
 
 /**
  * List command - lists available skills and rules
@@ -7,20 +7,30 @@ import { AVAILABLE_SKILLS, AVAILABLE_RULES } from '../types/index.js';
 export async function listCommand(): Promise<void> {
   console.log(chalk.bold.cyan('\n📋 Available Leeforge Resources\n'));
 
-  // List skills
+  // Scan and list skills
+  const skills = await scanAvailableSkills();
   console.log(chalk.bold('Skills:'));
-  AVAILABLE_SKILLS.forEach((skill, index) => {
-    console.log(chalk.cyan(`  ${index + 1}. ${skill}`));
-  });
+  if (skills.length === 0) {
+    console.log(chalk.dim('  No skills found'));
+  } else {
+    skills.forEach((skill, index) => {
+      console.log(chalk.cyan(`  ${index + 1}. ${skill}`));
+    });
+  }
 
   console.log();
 
-  // List rules
+  // Scan and list rules
+  const rules = await scanAvailableRules();
   console.log(chalk.bold('Rules:'));
-  AVAILABLE_RULES.forEach((rule, index) => {
-    console.log(chalk.cyan(`  ${index + 1}. ${rule}`));
-  });
+  if (rules.length === 0) {
+    console.log(chalk.dim('  No rules found'));
+  } else {
+    rules.forEach((rule, index) => {
+      console.log(chalk.cyan(`  ${index + 1}. ${rule}`));
+    });
+  }
 
   console.log();
-  console.log(chalk.dim('Use `leeforge install` to install resources\n'));
+  console.log(chalk.dim('Use `schema-cli install` to install resources\n'));
 }

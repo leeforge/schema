@@ -4,8 +4,6 @@ import {
   AI_DIRECTORIES,
   SKILLS_MAPPING,
   RULES_MAPPING,
-  AVAILABLE_SKILLS,
-  AVAILABLE_RULES,
   getAITypeDescription,
   type AIType,
 } from '../src/types/index.js';
@@ -53,30 +51,6 @@ describe('types', () => {
       expect(RULES_MAPPING.cursor).toBe('.cursor/rules');
       expect(RULES_MAPPING.windsurf).toBe('.windsurf/rules');
       expect(RULES_MAPPING.cline).toBe('.cline/rules');
-    });
-  });
-
-  describe('AVAILABLE_SKILLS', () => {
-    it('should contain all available skills', () => {
-      expect(AVAILABLE_SKILLS).toContain('schema');
-      expect(AVAILABLE_SKILLS).toContain('code-detector');
-      expect(AVAILABLE_SKILLS).toContain('form-developer');
-      expect(AVAILABLE_SKILLS).toContain('table-developer');
-      expect(AVAILABLE_SKILLS).toContain('backend-developer');
-    });
-
-    it('should have correct length', () => {
-      expect(AVAILABLE_SKILLS).toHaveLength(5);
-    });
-  });
-
-  describe('AVAILABLE_RULES', () => {
-    it('should contain all available rules', () => {
-      expect(AVAILABLE_RULES).toContain('schema-rules');
-    });
-
-    it('should have correct length', () => {
-      expect(AVAILABLE_RULES).toHaveLength(1);
     });
   });
 

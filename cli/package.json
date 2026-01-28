@@ -1,7 +1,7 @@
 {
   "name": "@leeforge/schema-cli",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "bin": {
     "schema-cli": "./dist/index.cjs",
     "lfs": "./dist/index.cjs"
@@ -19,9 +19,7 @@
   },
   "main": "./dist/index.cjs",
   "files": [
-    "dist/index.cjs",
-    "../skills",
-    "../schema-rules.md"
+    "dist"
   ],
   "scripts": {
     "build": "tsdown",

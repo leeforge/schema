@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import ora from 'ora';
 import prompts from 'prompts';
 import type { AIType, ResourceType } from '../types/index.js';
-import { AI_TYPES, getAITypeDescription, AVAILABLE_SKILLS, AVAILABLE_RULES } from '../types/index.js';
+import { AI_TYPES, getAITypeDescription } from '../types/index.js';
 import { detectAIType, ensureAIDirectory } from '../utils/detect.js';
-import { installResources } from '../utils/copy.js';
+import { installResources, scanAvailableSkills, scanAvailableRules } from '../utils/copy.js';
 
 interface InstallOptions {
   ai?: string;
@@ -97,34 +97,42 @@ export async function installCommand(options: InstallOptions): Promise<void> {
     selectedSkills = options.skills.split(',').map(s => s.trim());
   } else if (installSkills) {
     // Interactive mode - multi-select skills
-    const { skills } = await prompts({
-      type: 'multiselect',
-      name: 'skills',
-      message: 'Select skills to install:',
-      choices: AVAILABLE_SKILLS.map(skill => ({
-        title: skill,
-        value: skill,
-        selected: true, // Select all by default
-      })),
-      hint: '- Space to select. Return to submit',
-    });
+    // Dynamically scan available skills
+    const availableSkills = await scanAvailableSkills();
 
-    if (skills && skills.length > 0) {
-      selectedSkills = skills;
-    } else if (installSkills) {
-      // User deselected all, ask for confirmation
-      const { confirmNoSkills } = await prompts({
-        type: 'confirm',
-        name: 'confirmNoSkills',
-        message: 'No skills selected. Continue without installing skills?',
-        initial: false,
+    if (availableSkills.length === 0) {
+      console.log(chalk.yellow('⚠️  No skills found. Skipping skill installation.'));
+      installSkills = false;
+    } else {
+      const { skills } = await prompts({
+        type: 'multiselect',
+        name: 'skills',
+        message: 'Select skills to install:',
+        choices: availableSkills.map(skill => ({
+          title: skill,
+          value: skill,
+          selected: true, // Select all by default
+        })),
+        hint: '- Space to select. Return to submit',
       });
 
-      if (!confirmNoSkills) {
-        console.log(chalk.red('❌ Installation cancelled.'));
-        return;
+      if (skills && skills.length > 0) {
+        selectedSkills = skills;
+      } else if (installSkills) {
+        // User deselected all, ask for confirmation
+        const { confirmNoSkills } = await prompts({
+          type: 'confirm',
+          name: 'confirmNoSkills',
+          message: 'No skills selected. Continue without installing skills?',
+          initial: false,
+        });
+
+        if (!confirmNoSkills) {
+          console.log(chalk.red('❌ Installation cancelled.'));
+          return;
+        }
+        installSkills = false;
       }
-      installSkills = false;
     }
   }
 
@@ -136,34 +144,42 @@ export async function installCommand(options: InstallOptions): Promise<void> {
     selectedRules = options.rules.split(',').map(r => r.trim());
   } else if (installRules) {
     // Interactive mode - multi-select rules
-    const { rules } = await prompts({
-      type: 'multiselect',
-      name: 'rules',
-      message: 'Select rules to install:',
-      choices: AVAILABLE_RULES.map(rule => ({
-        title: rule,
-        value: rule,
-        selected: true, // Select all by default
-      })),
-      hint: '- Space to select. Return to submit',
-    });
+    // Dynamically scan available rules
+    const availableRules = await scanAvailableRules();
 
-    if (rules && rules.length > 0) {
-      selectedRules = rules;
-    } else if (installRules) {
-      // User deselected all, ask for confirmation
-      const { confirmNoRules } = await prompts({
-        type: 'confirm',
-        name: 'confirmNoRules',
-        message: 'No rules selected. Continue without installing rules?',
-        initial: false,
+    if (availableRules.length === 0) {
+      console.log(chalk.yellow('⚠️  No rules found. Skipping rule installation.'));
+      installRules = false;
+    } else {
+      const { rules } = await prompts({
+        type: 'multiselect',
+        name: 'rules',
+        message: 'Select rules to install:',
+        choices: availableRules.map(rule => ({
+          title: rule,
+          value: rule,
+          selected: true, // Select all by default
+        })),
+        hint: '- Space to select. Return to submit',
       });
 
-      if (!confirmNoRules) {
-        console.log(chalk.red('❌ Installation cancelled.'));
-        return;
+      if (rules && rules.length > 0) {
+        selectedRules = rules;
+      } else if (installRules) {
+        // User deselected all, ask for confirmation
+        const { confirmNoRules } = await prompts({
+          type: 'confirm',
+          name: 'confirmNoRules',
+          message: 'No rules selected. Continue without installing rules?',
+          initial: false,
+        });
+
+        if (!confirmNoRules) {
+          console.log(chalk.red('❌ Installation cancelled.'));
+          return;
+        }
+        installRules = false;
       }
-      installRules = false;
     }
   }
 

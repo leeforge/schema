@@ -3,24 +3,30 @@ import { getRepoPaths } from '../utils/copy.js';
 import { existsSync } from 'fs';
 
 /**
- * Debug command - shows repository paths and diagnostics
+ * Debug command - shows CLI paths and diagnostics
  */
 export async function debugCommand(): Promise<void> {
   console.log(chalk.bold.cyan('\n🔍 Leeforge CLI Debug Information\n'));
 
   const paths = getRepoPaths();
 
-  console.log(chalk.bold('Repository Paths:'));
-  console.log(chalk.dim('  Root:   ') + paths.root);
-  console.log(chalk.dim('  Skills: ') + paths.skills);
-  console.log(chalk.dim('  Rules:  ') + paths.rules);
+  console.log(chalk.bold('CLI Paths:'));
+  console.log(chalk.dim('  CLI Root: ') + paths.cliRoot);
+  console.log(chalk.dim('  Assets:   ') + paths.assets);
+  console.log(chalk.dim('  Skills:   ') + paths.skills);
+  console.log(chalk.dim('  Rules:    ') + paths.rules);
   console.log();
 
   console.log(chalk.bold('Path Existence:'));
   console.log(
-    existsSync(paths.root)
-      ? chalk.green('  ✓ Root directory exists')
-      : chalk.red('  ✗ Root directory NOT found')
+    existsSync(paths.cliRoot)
+      ? chalk.green('  ✓ CLI root directory exists')
+      : chalk.red('  ✗ CLI root directory NOT found')
+  );
+  console.log(
+    existsSync(paths.assets)
+      ? chalk.green('  ✓ Assets directory exists')
+      : chalk.red('  ✗ Assets directory NOT found')
   );
   console.log(
     existsSync(paths.skills)
@@ -44,8 +50,8 @@ export async function debugCommand(): Promise<void> {
 
   if (!existsSync(paths.skills) || !existsSync(paths.rules)) {
     console.log(chalk.yellow('⚠️  Warning: Some required directories are missing.'));
-    console.log(chalk.dim('   Make sure you are running this CLI from within the repository.'));
-    console.log(chalk.dim('   Or use: cd /path/to/leeforge_schema && schema-cli install\n'));
+    console.log(chalk.dim('   Make sure the CLI is properly built and assets are copied.'));
+    console.log(chalk.dim('   Run: npm run build\n'));
   } else {
     console.log(chalk.green('✨ All paths are valid!\n'));
   }
